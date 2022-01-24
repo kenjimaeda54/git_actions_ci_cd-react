@@ -2,12 +2,9 @@ name: CI
 
 on:
   pull_request:
-    branches:
-      - develop
+    branches: [develop]
   push:
-    branches:
-      - develop
-
+    branches: [develop] #tem que ser assim
 jobs:
   build:
     runs-on: ubuntu-latest
