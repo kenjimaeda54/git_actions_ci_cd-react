@@ -21,8 +21,11 @@ jobs:
           npm run test --coverage
         env: # essa variavel vai ser encontrada de forma automatica no test
           CI: 'true'
-        if: github.event_name == "push"
-      - name: Build project
+        if: github.event_name == 'push'
+      - name: Run build
+        run: npm run build
+      - name: Deploy Project
+        if: github.event_name == 'push'
         run: |
           npm install --global surge
           surge project ./build --domain gitactionskenji231
