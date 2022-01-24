@@ -4,6 +4,9 @@ on:
   pull_request:
     branches:
       - develop
+  push:
+    branches:
+      - develop
 
 jobs:
   build:
@@ -13,11 +16,19 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '16.*'
-      - name: Build app react
+      - name: Uni tests and desing styles
         run: |
           npm --version
           npm ci
-          npm run format
-          npm run test
-        env:
+          npm run format:check
+          npm run test --coverage
+        env: # essa variavel vai ser encontrada de forma automatica no test
           CI: 'true'
+        if: github.event_name == "push"
+      - name: Build project
+        run: |
+          npm install --global surge
+          surge project ./build --domain gitactionskenji231
+        env:
+          SURGE_LOGIN: ${{ secrets.SURGE_LOGIN }}
+          SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
