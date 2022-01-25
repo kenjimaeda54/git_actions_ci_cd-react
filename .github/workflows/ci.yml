@@ -27,7 +27,7 @@ jobs:
       - run: node --version
       - run: npm ci
       - run: npm run format:check
-      - run: npm test --coverage
+      - run: npm test -- --coverage # esse -- e para adicionar mais uma flag importante no pack.json so tem npm run test
         env:
           CI: true
       - uses: actions/checkout@v2
@@ -37,7 +37,6 @@ jobs:
         with:
           name: code coverage
           path: coverage
-      - run: ls -l
       - name: Run build
         # if precisa estar dentro do name
         if: github.event_name == 'push'
