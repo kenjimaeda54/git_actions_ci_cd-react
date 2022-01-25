@@ -10,11 +10,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2 # apo daqui precisa de um name
       - name: Tet react and styles
         uses: actions/setup-node@v2
         with:
-          node-version: '16.*' # a docs pede assim #https://github.com/actions/setup-node
+          node-version: '16.*'
+      # a docs pede nesse formato os run #https://github.com/actions/setup-node
       - run: npm --version
       - run: npm ci
       - run: npm run format:check
@@ -28,7 +29,7 @@ jobs:
         if: github.event_name == 'push'
         run: |
           npm install --global surge
-          surge project ./build --domain gitactionskenji231
+          surge --project ./build --domain gitactionskenji231
         env:
           SURGE_LOGIN: ${{ secrets.SURGE_LOGIN }}
           SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
