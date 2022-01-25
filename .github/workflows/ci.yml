@@ -30,9 +30,10 @@ jobs:
       - run: npm test --coverage
         env:
           CI: true
+      - uses: actions/checkout@v2
       - name: Upload artifacts
         # https://github.com/actions/upload-artifact
-        uses: actions/upload-artifact@v1 # começa a dau pau troca de versao para ver
+        uses: actions/upload-artifact@v2 # começa a dau pau troca de versao para ver
         with:
           name: code coverage
           path: coverage
