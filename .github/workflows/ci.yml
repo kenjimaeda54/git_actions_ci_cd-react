@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [develop]
   push:
-    branches: [develop]
+    branches: [develop] #branches precisam ser array dessa forma
 
 jobs:
   build:
@@ -19,7 +19,7 @@ jobs:
       - run: node --version
       - run: npm ci
       - run: npm run format:check
-      - run: npm tests --coverage
+      - run: npm test --coverage
         env:
           CI: true
       - name: Run build
