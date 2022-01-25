@@ -1,5 +1,5 @@
 name: Ci
-
+#https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
 on:
   pull_request:
     branches: [develop]
@@ -30,12 +30,25 @@ jobs:
       - run: npm test --coverage
         env:
           CI: true
+      - name: Upload artifacts
+        # https://github.com/actions/upload-artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage test # nome disponível na aba
+          path: coverage
       - name: Run build
         # if precisa estar dentro do name
         if: github.event_name == 'push'
         run: |
           npm ci
           npm run build
+      - name: Upload artifacts
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: build
+      - uses: actions/download-artifact@v2
       - name: Deploy project
         if: github.event_name == 'push'
         run: |
