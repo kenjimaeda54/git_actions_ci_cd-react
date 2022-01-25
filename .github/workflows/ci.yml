@@ -34,7 +34,7 @@ jobs:
         # https://github.com/actions/upload-artifact
         uses: actions/upload-artifact@v2
         with:
-          name: coverage test
+          name: coverage # name e o nome da pasta e path e o caminho,aqui ambos sao coverage
           path: coverage
       - name: Run build
         # if precisa estar dentro do name
