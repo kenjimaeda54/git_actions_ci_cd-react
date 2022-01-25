@@ -1,35 +1,38 @@
-name: CI
+name: Ci
 
 on:
   pull_request:
     branches: [develop]
   push:
-    branches: [develop] #tem que ser assim
+    branches: [develop] #branches precisam ser array dessa forma
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2 # apo daqui precisa de um name
-      - name: Tet react and styles
+      - uses: actions/checkout@v2
+      - name: Run tests react and styles
         uses: actions/setup-node@v2
         with:
           node-version: '16.*'
       # a docs pede nesse formato os run #https://github.com/actions/setup-node
-      - run: npm --version
+      - run: node --version
       - run: npm ci
       - run: npm run format:check
-      - run: npm run test --coverage
-        env: # essa variavel vai ser encontrada de forma automatica no test
+      - run: npm test --coverage
+        env:
           CI: true
       - name: Run build
-        if: github.event_name == 'push' # if precisa estar dentro do name
-        run: npm run build
-      - name: Deploy Project
+        # if precisa estar dentro do name
+        if: github.event_name == 'push'
+        run: |
+          npm ci
+          npm run build
+      - name: Deploy project
         if: github.event_name == 'push'
         run: |
           npm install --global surge
-          surge --project ./build --domain gitactionskenji231
+          surge --project ./build --domain gitactionskenji231.sh
         env:
           SURGE_LOGIN: ${{ secrets.SURGE_LOGIN }}
           SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
