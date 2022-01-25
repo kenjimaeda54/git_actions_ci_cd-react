@@ -37,6 +37,7 @@ jobs:
         with:
           name: code coverage
           path: coverage
+      - run: ls -l
       - name: Run build
         # if precisa estar dentro do name
         if: github.event_name == 'push'
