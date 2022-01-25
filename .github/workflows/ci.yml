@@ -30,12 +30,11 @@ jobs:
       - run: npm test -- --coverage # esse -- e para adicionar mais uma flag importante no pack.json so tem npm run test
         env:
           CI: true
-      - uses: actions/checkout@v2
       - name: Upload artifacts
         # https://github.com/actions/upload-artifact
-        uses: actions/upload-artifact@v2 # começa a dau pau troca de versao para ver
+        uses: actions/upload-artifact@v2
         with:
-          name: code coverage
+          name: code coverage # nome que vai aparecer para fazer download na interface do git hub
           path: coverage
       - name: Run build
         # if precisa estar dentro do name
