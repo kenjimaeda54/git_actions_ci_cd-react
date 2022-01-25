@@ -2,9 +2,9 @@ name: Ci
 #https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
 on:
   pull_request:
-    branches: [develop]
+    branches: [develop, master]
   push:
-    branches: [develop] #branches precisam ser array dessa forma
+    branches: [develop, master] #branches precisam ser array dessa forma
 
 jobs:
   build:
@@ -42,6 +42,11 @@ jobs:
         run: |
           npm ci
           npm run build
+      - name: Create release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload artifacts
         if: github.event_name == 'push'
         uses: actions/upload-artifact@v2
