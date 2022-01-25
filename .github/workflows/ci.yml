@@ -10,16 +10,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Test react and styles format
       - uses: actions/checkout@v2
-      - name: Use node js
-        uses: actions/setup-node@v2
+      - uses: actions/setup-node@v2
         with:
-          node-version: '16.*'
-        run: |
-          npm --version
-          npm ci
-          npm run format:check
-          npm run test --coverage
+          node-version: '16.*' # a docs pede assim #https://github.com/actions/setup-node
+      - run: npm --version
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run test --coverage
         env: # essa variavel vai ser encontrada de forma automatica no test
           CI: true
       - name: Run build
