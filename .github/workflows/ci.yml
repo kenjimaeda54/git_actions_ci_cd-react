@@ -55,7 +55,10 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: npx semantic-release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # github fornece um token assim que inicia aplicação, consigo acessar direto por secrets.GITHUB.TOKEN
+          # mas criei um novo token,porque o evento de release precisa ser meu usuário e nao criado pelo github
+          # para criar seu token,no seu perfil de usuário do github,procura por settings, Developer settings e gera o token
+          GITHUB_TOKEN: ${{ secrets.PROFILE_TOKEN }}
       - name: Upload artifacts
         if: github.event_name == 'push'
         uses: actions/upload-artifact@v2

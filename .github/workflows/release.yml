@@ -1,0 +1,13 @@
+name: Message release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  message-slack-release:
+    runs-on: ubuntu-latest
+    steps:
+      # vou enviar para o slack uma mensagem personalizada contendo  a tag da release
+      - run: |
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"New release: ${{ github.event.release.tag_name }}, is out"}'${{ secrets.WEBHOOK_SLACK }}
