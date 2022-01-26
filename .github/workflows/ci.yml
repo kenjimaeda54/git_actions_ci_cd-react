@@ -9,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      SURGE_LOGIN: ${{ secrets.SURGE_LOGIN }}
+      SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
     steps:
       - uses: actions/checkout@v2
       - name: Save cache
@@ -60,11 +63,18 @@ jobs:
           name: build
           path: build
       - uses: actions/download-artifact@v2
-      - name: Deploy project
-        if: github.event_name == 'push'
+      - name: Deploy to staging
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
         run: |
           npm install --global surge
           surge --project ./build --domain gitactionskenji231.surge.sh
+      - name: Deploy to production
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
+          npm install --global surge
+          surge --project ./build --domain gitactionskenji231.surge.sh
+      - name: Upload coverage reports
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: npx codecov
         env:
-          SURGE_LOGIN: ${{ secrets.SURGE_LOGIN }}
-          SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
