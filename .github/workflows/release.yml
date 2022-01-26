@@ -11,4 +11,5 @@ jobs:
       # vou enviar para o slack uma mensagem personalizada contendo  a tag da release
       #
       - run: |
+          echo ${{ secrets.WEBHOOK_SLACK  }}
           curl -X POST -H 'Content-type: application/json' --data '{"text":"New release: ${{ github.event.release.tag_name }}, is out"}'${{ secrets.WEBHOOK_SLACK }}
