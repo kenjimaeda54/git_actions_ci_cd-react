@@ -1,5 +1,5 @@
 name: Message release
-
+# esse fluxo so aciona quando inicia uma nova release
 on:
   release:
     types: [published]
