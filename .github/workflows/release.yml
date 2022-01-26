@@ -12,5 +12,4 @@ jobs:
       #
       - name: Sending message release
         run: |
-          echo  "O url imprime auqi ${{ secrets.WEBHOOK_SLACK  }}"
           curl -X POST -H 'Content-type: application/json' --data '{"text":"New release: ${{ github.event.release.tag_name }}, is out"}' ${{ secrets.WEBHOOK_SLACK }}
