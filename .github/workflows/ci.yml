@@ -42,16 +42,17 @@ jobs:
         run: |
           npm ci
           npm run build
+      - name: Zip assets release
+        # primeiro precisa fazer o assets depois release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
+          zip -r  build.zip  ./build
+          zip -r  coverage.zip ./coverage
       - name: Create release
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Zip assets release
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        run: |
-          zip -r  build.zip  ./build
-          zip -r  coverage.zip ./coverage
       - name: Upload artifacts
         if: github.event_name == 'push'
         uses: actions/upload-artifact@v2
