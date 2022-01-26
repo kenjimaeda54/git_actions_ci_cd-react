@@ -71,7 +71,6 @@ jobs:
         run: |
           npm install --global surge
           surge --project ./build --domain gitactionskenji231.surge.sh
-          echo $SURGE_TOKEN
       - name: Deploy to production
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
