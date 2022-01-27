@@ -1,0 +1,15 @@
+name: Message issue
+# esse fluxo so aciona quando inicia uma nova release
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  message-slack-release:
+    runs-on: ubuntu-latest
+    steps:
+      # vou enviar para o slack uma mensagem personalizada contendo  a tag da release
+      # o pipe <|> e tudo colado idêntico que esta ali em baixo
+      - name: Sending message issue
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"New issues , is open <${{ github.event.issue.html_url }}|${{github.event.issue.title}}.>"}' ${{ secrets.WEBHOOK_SLACK }}
