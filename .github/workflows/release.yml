@@ -1,0 +1,15 @@
+name: Message release
+# esse fluxo so aciona quando inicia uma nova release
+on:
+  release:
+    types: [published]
+
+jobs:
+  message-slack-release:
+    runs-on: ubuntu-latest
+    steps:
+      # vou enviar para o slack uma mensagem personalizada contendo  a tag da release
+      # o pipe <|> e tudo colado idêntico que esta ali em baixo
+      - name: Sending message release
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"New release: ${{ github.event.release.tag_name }}, is out <${{ github.event.release.html_url }}|check it out now.>"}' ${{ secrets.WEBHOOK_SLACK }}

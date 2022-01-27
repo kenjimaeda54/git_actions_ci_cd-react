@@ -2,13 +2,16 @@ name: Ci
 #https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
 on:
   pull_request:
-    branches: [develop]
+    branches: [develop, master]
   push:
-    branches: [develop] #branches precisam ser array dessa forma
+    branches: [develop, master] #branches precisam ser array dessa forma
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      SURGE_LOGIN: ${{ secrets.SURGE_LOGIN }}
+      SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
     steps:
       - uses: actions/checkout@v2
       - name: Save cache
@@ -42,6 +45,20 @@ jobs:
         run: |
           npm ci
           npm run build
+      - name: Zip assets release
+        # primeiro precisa fazer o assets depois release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
+          zip -r  build.zip  ./build
+          zip -r  coverage.zip ./coverage
+      - name: Create release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: npx semantic-release
+        env:
+          # github fornece um token assim que inicia aplicação, consigo acessar direto por secrets.GITHUB.TOKEN
+          # mas criei um novo token,porque o evento de release precisa ser meu usuário e nao criado pelo github
+          # para criar seu token,no seu perfil de usuário do github,procura por settings, Developer settings e gera o token
+          GITHUB_TOKEN: ${{ secrets.PROFILE_TOKEN }}
       - name: Upload artifacts
         if: github.event_name == 'push'
         uses: actions/upload-artifact@v2
@@ -49,11 +66,30 @@ jobs:
           name: build
           path: build
       - uses: actions/download-artifact@v2
-      - name: Deploy project
-        if: github.event_name == 'push'
+      - name: Deploy to staging
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
         run: |
           npm install --global surge
           surge --project ./build --domain gitactionskenji231.surge.sh
+      - name: Deploy to production
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
+          npm install --global surge
+          surge --project ./build --domain gitactionskenji231.surge.sh
+      - name: Upload coverage reports
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: npx codecov
         env:
-          SURGE_LOGIN: ${{ secrets.SURGE_LOGIN }}
-          SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - name: Open issue
+        if: failure() && github.event_name == 'pull_request'
+        run: |
+          curl --request POST \
+          --url https://api.github.com/repos/${{ github.repository }}/issues \
+          --header 'authorization: Bearer ${{ secrets.PROFILE_TOKEN }}' \
+          --header 'content-type: application/json' \
+          --data '{
+            "title": "Automated issue for commit: ${{ github.sha }}",
+            "body": "This issue was automatically created by the GitHub Action workflow **${{ github.workflow }}**. \n\n The commit hash was: _${{ github.sha }}_.",
+            "assignees": ["${{ github.event.pull_request.user.login }}"]
+            }'
