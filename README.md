@@ -1,70 +1,49 @@
-# Getting Started with Create React App
+# CI/CD React
+CI/CD em um projeto padrao criado pela lib do Facebook
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## Motivacao 
+Praticar CI/CD com git hub actions
 
-In the project directory, you can run:
+## Feature
+- Criei workflow de trabalho usando o arquivo CODEOWNERS
+- CODEOWNERS consigo redirecionar as fluxo para as branchs responsáveis
+- Para funcionar corretamente o ideal e bloquear as branch vitalicias como develop e master
+- No arquivo CI usei bastante do recurso de contexto do github usando if e variáveis de ambiente
+- Github assim que inicia o repositorio injeto um token em seu repositório local dessa forma consegue captuurar por ${{ github.token }}, mas a intenção era enviar para slack mensagem de release e insue, então na aba de profile em setings, cliquei em develop e fiz meu próprio token
+- Para criar as releases de forma automático usei [semantic-release](https://github.com/semantic-release/npm#readme)
+- Bom dos caches que não precisei ficar constantemente baixando as dependências para o projeto, ideal estrategia quando precisa em cada etapa do job inicia o ciclo novamente
+- Exemplo de uso do cache,fiz o pull do projeto automático pelo yml, apliquei os testes e salvei o cache das depenicas, quando eu precisar fazer o build, ja esta salvo no cache.
+- No github acions e ideal seguir a recomendação de cada actions para evitar problemas, [cache](https://github.com/actions/cache)
+- Dificuldade foi no momento de setar o node, motivo foi que usei de forma incorreta solicitado pela [actions/node](https://github.com/actions/setup-node)
+- Para estender um comando do packjson pode usar a flag --
+- Para fazer o deploy da aplicação foi usado o surge
+- Dicas para o [surge](https://gitlab.com/kenjimaeda54/static-website)
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+``` yml
 
-### `npm test`
+- name: Create release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: npx semantic-release
+        env:
+          # github fornece um token assim que inicia aplicação, consigo acessar direto por secrets.GITHUB.TOKEN
+          # mas criei um novo token,porque o evento de release precisa ser meu usuário e nao criado pelo github
+          # para criar seu token,no seu perfil de usuário do github,procura por settings, Developer settings e gera o token
+          GITHUB_TOKEN: ${{ secrets.PROFILE_TOKEN }}
+          
+- name: Run tests react and styles
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.*'
+      - run: node --version
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm test -- --coverage # esse -- e para adicionar mais uma flag importante no pack.json so tem npm run test
+        env:
+          CI: true          
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```
