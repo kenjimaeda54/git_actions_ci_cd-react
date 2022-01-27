@@ -12,4 +12,4 @@ jobs:
       #
       - name: Sending message release
         run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"text":"New release: ${{ github.event.release.tag_name }}, is out <${{ github.event.release.html_ul }}| check it out now >"}' ${{ secrets.WEBHOOK_SLACK }}
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"New release: ${{ github.event.release.tag_name }}, is out < ${{ github.event.release.html_ul }}|check it out now.>"}' ${{ secrets.WEBHOOK_SLACK }}
